@@ -14,8 +14,9 @@ import jsPDF from 'jspdf';
 const MARGIN = 40; // pt, applied on every side, every coordinate — never hard-coded elsewhere
 const SECTION_GAP = 14; // pt, breathing room between stacked sections on the same page
 const SCALE = 2; // minimum for crisp text at PDF zoom
-const BRAND_BG = '#FAF6F0'; // cream-family background, matches web app (Part 4.5)
+const BRAND_BG = '#FAF6F0'; // cream-family background for PDF pages (Part 4.5)
 const BRAND_BG_RGB = [250, 246, 240]; // RGB values for setFillColor
+const SECTION_BG = '#FFFFFF'; // white background for individual sections
 
 function setPDFPageBackground(pdf, pageWidth, pageHeight) {
   // Set the entire page background to cream (Part 4.5), not white.
@@ -75,11 +76,11 @@ export async function exportReportToPDF(elementId, filename = 'pricing-leak-repo
     );
 
     for (const section of sections) {
-      // BACKGROUND COLOR FIX: Ensure each section has the cream-family background
-      // before capture. This guarantees the PDF matches the web app's look (Part 4.5).
+      // SECTION BACKGROUND: Keep sections white (not cream) while the PDF page
+      // itself is cream. This creates the visual effect of white cards on a cream page.
       // Store the original so we can restore it after capture (don't mutate the live DOM).
       const originalBg = section.style.backgroundColor;
-      section.style.backgroundColor = BRAND_BG;
+      section.style.backgroundColor = SECTION_BG; // white, not cream
 
       // ENSURE PROPER TEXT RENDERING: Apply CSS styles that guarantee line-height
       // and letter-spacing are preserved during capture
@@ -90,7 +91,7 @@ export async function exportReportToPDF(elementId, filename = 'pricing-leak-repo
 
       const canvas = await html2canvas(section, {
         scale: SCALE,
-        backgroundColor: BRAND_BG,
+        backgroundColor: SECTION_BG, // capture section as white
         useCORS: true,
         allowTaint: true, // allows rendering to proceed even with cross-origin issues
         logging: false, // suppress console spam from html2canvas
@@ -120,7 +121,7 @@ export async function exportReportToPDF(elementId, filename = 'pricing-leak-repo
       if (imgHeightPt > remaining && !isFirstPage) {
         // Section doesn't fit; start a new page
         pdf.addPage();
-        setPDFPageBackground(pdf, pageWidth, pageHeight); // background on every new page
+        setPDFPageBackground(pdf, pageWidth, pageHeight); // background on every new page (cream)
         cursorY = MARGIN; // reset to top margin, never 0
       }
 
