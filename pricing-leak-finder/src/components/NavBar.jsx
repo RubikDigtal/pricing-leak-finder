@@ -24,7 +24,7 @@ export default function NavBar() {
           </div>
         </Link>
         <a
-          href="https://theconversationleak.com"
+          href="https://sales-leak-diagnostic-tools.vercel.app/"
           style={{ fontSize: 13, color: 'var(--espresso-70)', textDecoration: 'none', fontWeight: 500 }}
         >
           More diagnostic tools →
